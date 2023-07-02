@@ -1,0 +1,395 @@
+[
+    {
+        "id": "f58466329032fa2c",
+        "type": "tab",
+        "label": "ipGeoLocatorTakFlow",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "5072448a57e91e88",
+        "type": "tcp in",
+        "z": "f58466329032fa2c",
+        "name": "",
+        "server": "client",
+        "host": "10.237.104.20",
+        "port": "8089",
+        "datamode": "stream",
+        "datatype": "utf8",
+        "newline": "",
+        "topic": "",
+        "trim": false,
+        "base64": false,
+        "tls": "1c52b35895c06e7e",
+        "x": 280,
+        "y": 360,
+        "wires": [
+            [
+                "e4d7fa39b28b7373"
+            ]
+        ]
+    },
+    {
+        "id": "e4d7fa39b28b7373",
+        "type": "tak",
+        "z": "f58466329032fa2c",
+        "name": "TAK",
+        "x": 550,
+        "y": 360,
+        "wires": [
+            [
+                "445d1247dface409",
+                "9375a929cd03270a"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "35a46f7dfc6d3f80",
+        "type": "debug",
+        "z": "f58466329032fa2c",
+        "name": "debug json",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1230,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "9375a929cd03270a",
+        "type": "function",
+        "z": "f58466329032fa2c",
+        "name": "filter data",
+        "func": "var isNum;\nvar isLength;\nvar callsign = String(msg.payload.event.detail.contact._attributes.callsign);\nvar ip = callsign.split(\".\");\nvar bit = String(ip.join(\"\"))\n\nfor (var i = 0; i < bit.length; i++){\n    var num = bit[i];\n    if (num == \"0\" || num == \"1\" || num == \"2\" || num == \"3\" || num == \"4\" || num == \"5\" || num == \"6\" || num == \"7\" || num == \"8\" || num == \"9\"){\n        isNum = true;\n    } else {\n        isNum = false;\n        break;\n    }\n}\n\nif (isNum === true && ip.length === 4 && callsign.length <= 15 && ip[0].length <= 3 && ip[1].length <= 3 && ip[2].length <= 3 && ip[3].length <= 3) {\n    msg.payload = {\n        \"ip\": String(callsign),\n        \"uid\": msg.payload.event._attributes.uid,\n        \"isNum\": isNum\n    };\n    node.send(msg);\n} else {\n    return null;\n};",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 440,
+        "wires": [
+            [
+                "1f84d698d5282ff0",
+                "24a79bf42fe0f9bd",
+                "939f5c03ce89af03"
+            ]
+        ]
+    },
+    {
+        "id": "6b676faf631358a6",
+        "type": "debug",
+        "z": "f58466329032fa2c",
+        "name": "debug http",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1110,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "a8017795e8d60f2d",
+        "type": "json",
+        "z": "f58466329032fa2c",
+        "name": "",
+        "property": "payload",
+        "action": "",
+        "pretty": false,
+        "x": 1090,
+        "y": 360,
+        "wires": [
+            [
+                "35a46f7dfc6d3f80",
+                "17b819e810157eab"
+            ]
+        ]
+    },
+    {
+        "id": "1f84d698d5282ff0",
+        "type": "http request",
+        "z": "f58466329032fa2c",
+        "name": "http req (1-day)",
+        "method": "GET",
+        "ret": "txt",
+        "paytoqs": "ignore",
+        "url": "http://ip-api.com/json/{{{payload.ip}}}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,mobile,proxy,hosting,query",
+        "tls": "",
+        "persist": false,
+        "proxy": "",
+        "insecureHTTPParser": false,
+        "authType": "",
+        "senderr": false,
+        "headers": [],
+        "x": 940,
+        "y": 320,
+        "wires": [
+            [
+                "a8017795e8d60f2d",
+                "6b676faf631358a6"
+            ]
+        ]
+    },
+    {
+        "id": "c75f25e85c44e3db",
+        "type": "tak",
+        "z": "f58466329032fa2c",
+        "name": "TAK",
+        "x": 1870,
+        "y": 440,
+        "wires": [
+            [
+                "835c7ec6cd7b3994",
+                "a3527674edd523b6"
+            ],
+            [],
+            []
+        ]
+    },
+    {
+        "id": "835c7ec6cd7b3994",
+        "type": "debug",
+        "z": "f58466329032fa2c",
+        "name": "debug tak",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 2040,
+        "y": 340,
+        "wires": []
+    },
+    {
+        "id": "a3527674edd523b6",
+        "type": "tcp out",
+        "z": "f58466329032fa2c",
+        "name": "",
+        "host": "10.237.104.20",
+        "port": "8089",
+        "beserver": "client",
+        "base64": false,
+        "end": false,
+        "tls": "1c52b35895c06e7e",
+        "x": 2150,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "966bc7db87c7d391",
+        "type": "function",
+        "z": "f58466329032fa2c",
+        "name": "ip locator cot",
+        "func": "const short = 10000;\nconst cinco = 5 * 60 * 1000;\nconst diez = 2 * cinco;\nconst stale = new Date(Date.now() + short).toISOString();\n\nvar status = msg.payload[1].status;\nvar uid = msg.payload[0].uid;\nvar lat = msg.payload[1].lat;\nvar lon = msg.payload[1].lon;\nvar ip = msg.payload[1].query;\nvar isp = msg.payload[1].isp;\nvar org = msg.payload[1].org;\nvar as = msg.payload[1].as;\nvar city = msg.payload[1].city;\nvar regionName = msg.payload[1].regionName;\nvar region = msg.payload[1].region;\nvar country = msg.payload[1].country;\nvar mobile = msg.payload[1].mobile;\nvar hosting = msg.payload[1].hosting;\nvar proxy = msg.payload[1].proxy;\nvar icon = \"f7f71666-8b28-4b57-9fbb-e38e61d33b79/Google/info.png\";\n\nvar remark = country + \", \" + regionName + \", \" + city + \", \" + isp + \", \" + org + \", \" + as + \", Data Center:\" + hosting + \", Mobile Device:\" + mobile + \", Proxy/VPN:\" + proxy;\n\n\nmsg.payload = { \n    \"_declaration\": { \n        \"_attributes\": { \n            \"version\": \"1.0\", \n            \"encoding\": \"UTF-8\" \n        } \n    }, \n    \"event\": { \n        \"_attributes\": { \n            \"version\": \"2.0\", \n            \"uid\": uid,\n             \"type\": \"a-u-G\", \n             \"how\": \"h-g-i-g-o\", \n            \"time\": new Date(Date.now()).toISOString(), \n            \"start\": new Date(Date.now()).toISOString(), \n            \"stale\": stale \n             }, \n             \"point\": { \n                 \"_attributes\": { \n                     \"lat\": \"\"+ lat +\"\", \n                     \"lon\": \"\"+ lon +\"\", \n                     \"hae\": \"0.0\", \n                     \"ce\": \"9999999.0\", \n                     \"le\": \"9999999.0\" \n                    } \n                },\n                \"detail\": { \n                    \"contact\": { \n                        \"_attributes\": { \n                            \"callsign\": ip + \"(\" + regionName + \")\"  \n                        } \n                    }, \n                        \"status\": { \n                            \"_attributes\": { \n                                \"readiness\": \"true\" \n                            } \n                        }, \n                        \"archive\": [{}, {}],  \n                        \"color\": { \n                            \"_attributes\": {\n                                \"argb\": \"-1\" \n                            } \n                        }, \n                        \"usericon\": { \n                            \"_attributes\": { \n                                \"iconsetpath\": icon, \n                            } \n                        }, \n                        \"remarks\": { \n                            \"_text\": remark,\n                        },  \n                    } \n                } \n            }\n\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 1530,
+        "y": 440,
+        "wires": [
+            [
+                "9ca1d91f5df4c8a0",
+                "c75f25e85c44e3db"
+            ]
+        ]
+    },
+    {
+        "id": "9ca1d91f5df4c8a0",
+        "type": "debug",
+        "z": "f58466329032fa2c",
+        "name": "debug cot",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1710,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "97a8b187e25df073",
+        "type": "udp out",
+        "z": "f58466329032fa2c",
+        "name": "",
+        "addr": "239.2.3.1",
+        "iface": "",
+        "port": "6969",
+        "ipv": "udp4",
+        "outport": "",
+        "base64": false,
+        "multicast": "multi",
+        "x": 2130,
+        "y": 500,
+        "wires": []
+    },
+    {
+        "id": "445d1247dface409",
+        "type": "debug",
+        "z": "f58466329032fa2c",
+        "name": "debug cot traffic",
+        "active": false,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 760,
+        "y": 240,
+        "wires": []
+    },
+    {
+        "id": "24a79bf42fe0f9bd",
+        "type": "join",
+        "z": "f58466329032fa2c",
+        "name": "",
+        "mode": "custom",
+        "build": "array",
+        "property": "payload",
+        "propertyType": "msg",
+        "key": "topic",
+        "joiner": "\\n",
+        "joinerType": "str",
+        "accumulate": false,
+        "timeout": "",
+        "count": "2",
+        "reduceRight": false,
+        "reduceExp": "",
+        "reduceInit": "",
+        "reduceInitType": "",
+        "reduceFixup": "",
+        "x": 1330,
+        "y": 440,
+        "wires": [
+            [
+                "966bc7db87c7d391",
+                "0bdc4f44f1a184c8"
+            ]
+        ]
+    },
+    {
+        "id": "0bdc4f44f1a184c8",
+        "type": "debug",
+        "z": "f58466329032fa2c",
+        "name": "debug join",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 1490,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "0e1da8a1aa6090bb",
+        "type": "comment",
+        "z": "f58466329032fa2c",
+        "name": "README",
+        "info": "",
+        "x": 440,
+        "y": 200,
+        "wires": []
+    },
+    {
+        "id": "f8617972f1615530",
+        "type": "comment",
+        "z": "f58466329032fa2c",
+        "name": "configure TCP (TAKServer)",
+        "info": "if using SSL/TLS ensure you upload your certificates, key and input your passphrase.\nCertificates (.pem) and key (.key) can be found in your TAKServers directory where it stores all TAK client certificates.\nDefualt SSL/TLS port is 8089.\n",
+        "x": 290,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "e2675f0c859cf773",
+        "type": "comment",
+        "z": "f58466329032fa2c",
+        "name": "configure TCP (TAKServer)",
+        "info": "if using SSL/TLS ensure you upload your certificates, key and input your passphrase.\nCertificates (.pem) and key (.key) can be found in your TAKServers directory where it stores all TAK client certificates.\nDefualt SSL/TLS port is 8089.\n",
+        "x": 2190,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "939f5c03ce89af03",
+        "type": "debug",
+        "z": "f58466329032fa2c",
+        "name": "debug 29",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "false",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 900,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "17b819e810157eab",
+        "type": "delay",
+        "z": "f58466329032fa2c",
+        "name": "delay",
+        "pauseType": "delay",
+        "timeout": "100",
+        "timeoutUnits": "milliseconds",
+        "rate": "1",
+        "nbRateUnits": "1",
+        "rateUnits": "second",
+        "randomFirst": "1",
+        "randomLast": "5",
+        "randomUnits": "seconds",
+        "drop": false,
+        "allowrate": false,
+        "outputs": 1,
+        "x": 1210,
+        "y": 400,
+        "wires": [
+            [
+                "24a79bf42fe0f9bd"
+            ]
+        ]
+    },
+    {
+        "id": "1c52b35895c06e7e",
+        "type": "tls-config",
+        "name": "node-red to takserver",
+        "cert": "",
+        "key": "",
+        "ca": "",
+        "certname": "node-red.pem",
+        "keyname": "node-red.key",
+        "caname": "ca.pem",
+        "servername": "",
+        "verifyservercert": false,
+        "alpnprotocol": ""
+    }
+]
