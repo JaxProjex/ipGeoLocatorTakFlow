@@ -25,9 +25,7 @@
         "x": 280,
         "y": 360,
         "wires": [
-            [
-                "e4d7fa39b28b7373"
-            ]
+            []
         ]
     },
     {
@@ -40,7 +38,8 @@
         "wires": [
             [
                 "445d1247dface409",
-                "9375a929cd03270a"
+                "9375a929cd03270a",
+                "7a2798694a9544a8"
             ],
             [],
             []
@@ -79,8 +78,7 @@
         "wires": [
             [
                 "1f84d698d5282ff0",
-                "24a79bf42fe0f9bd",
-                "939f5c03ce89af03"
+                "24a79bf42fe0f9bd"
             ]
         ]
     },
@@ -153,7 +151,7 @@
         "wires": [
             [
                 "835c7ec6cd7b3994",
-                "a3527674edd523b6"
+                "97a8b187e25df073"
             ],
             [],
             []
@@ -338,22 +336,6 @@
         "wires": []
     },
     {
-        "id": "939f5c03ce89af03",
-        "type": "debug",
-        "z": "f58466329032fa2c",
-        "name": "debug 29",
-        "active": true,
-        "tosidebar": true,
-        "console": false,
-        "tostatus": false,
-        "complete": "false",
-        "statusVal": "",
-        "statusType": "auto",
-        "x": 900,
-        "y": 520,
-        "wires": []
-    },
-    {
         "id": "17b819e810157eab",
         "type": "delay",
         "z": "f58466329032fa2c",
@@ -374,6 +356,72 @@
         "y": 400,
         "wires": [
             [
+                "24a79bf42fe0f9bd"
+            ]
+        ]
+    },
+    {
+        "id": "9643c8b143a80302",
+        "type": "udp in",
+        "z": "f58466329032fa2c",
+        "name": "",
+        "iface": "",
+        "port": "6969",
+        "ipv": "udp4",
+        "multicast": "true",
+        "group": "239.2.3.1",
+        "datatype": "utf8",
+        "x": 290,
+        "y": 420,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "55b64621be175774",
+        "type": "udp in",
+        "z": "f58466329032fa2c",
+        "name": "udp 239.2.3.1:6969 (ZT)",
+        "iface": "",
+        "port": "6969",
+        "ipv": "udp4",
+        "multicast": "true",
+        "group": "239.2.3.1",
+        "datatype": "buffer",
+        "x": 280,
+        "y": 480,
+        "wires": [
+            [
+                "e4d7fa39b28b7373"
+            ]
+        ]
+    },
+    {
+        "id": "b1b7f18659ea0f73",
+        "type": "comment",
+        "z": "f58466329032fa2c",
+        "name": "if using ZeroTier over UDP connect the \"udp (ZT)\" ",
+        "info": "",
+        "x": 310,
+        "y": 540,
+        "wires": []
+    },
+    {
+        "id": "7a2798694a9544a8",
+        "type": "function",
+        "z": "f58466329032fa2c",
+        "name": "filter data (ZT)",
+        "func": "var isNum;\nvar isLength;\nvar callsign = String(msg.payload.cotEvent.detail.contact.callsign);\nvar ip = callsign.split(\".\");\nvar bit = String(ip.join(\"\"))\n\nfor (var i = 0; i < bit.length; i++){\n    var num = bit[i];\n    if (num == \"0\" || num == \"1\" || num == \"2\" || num == \"3\" || num == \"4\" || num == \"5\" || num == \"6\" || num == \"7\" || num == \"8\" || num == \"9\"){\n        isNum = true;\n    } else {\n        isNum = false;\n        break;\n    }\n}\n\nif (isNum === true && ip.length === 4 && callsign.length <= 15 && ip[0].length <= 3 && ip[1].length <= 3 && ip[2].length <= 3 && ip[3].length <= 3) {\n    msg.payload = {\n        \"ip\": String(callsign),\n        \"uid\": msg.payload.cotEvent.uid,\n        \"isNum\": isNum\n    };\n    node.send(msg);\n} else {\n    return null;\n};",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 740,
+        "y": 480,
+        "wires": [
+            [
+                "1f84d698d5282ff0",
                 "24a79bf42fe0f9bd"
             ]
         ]
